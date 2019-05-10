@@ -1,0 +1,14 @@
+public static async Task<string> DownloadEOPFile(string authToken, string fileID)
+        {
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            
+            string URL = "https://devcloudconvert-01.avrplatform.com/ConversionAPI/files/" + fileID;
+            HttpResponseMessage response = await client.GetAsync(URL);
+
+            //string res = response.Content.ReadAsStringAsync().Result;
+            byte[] res = response.Content.ReadAsByteArrayAsync().Result;
+            string resB = Convert.ToBase64String(res);
+            return resB;
+        }
