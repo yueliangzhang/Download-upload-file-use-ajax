@@ -1,0 +1,22 @@
+ public static async Task<string> UploadFileToApi(HttpRequestBase httpRequestBase, string authToken)
+        {
+            var multiFormData = new MultipartFormDataContent();
+            foreach (string file in httpRequestBase.Files)
+            {
+                var fileContent = httpRequestBase.Files[file];
+                if (fileContent != null && fileContent.ContentLength > 0)
+                {
+                    var stream = fileContent.InputStream;
+                    multiFormData.Add(new StreamContent(stream), "File", fileContent.FileName);
+                }
+            }
+
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            string URL = "https://devcloudconvert-01.avrplatform.com/ConversionAPI/files";
+            HttpResponseMessage response = await client.PostAsync(URL, multiFormData);
+            string res = response.Content.ReadAsStringAsync().Result;
+
+            return res;
+        }
